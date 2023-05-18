@@ -106,7 +106,7 @@ def connect_user_to_stan(id_stan: int, id_user: int):
         return {"ERROR": "STAN DOESN'T EXIST"}
 
     # On vérifie si le stan possède pas déjà un user
-    if stan_info["idconnecteduser"] is None:
+    if stan_info["idconnecteduser"] is not None:
         return {"ERROR": "STAN ALREADY USED"}
 
     # On vérifie si le user est pas déjà connecté à un stan
