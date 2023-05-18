@@ -95,8 +95,30 @@ def get_stan_data(stan_id: int):
 
 @app.put('/stan/connectuser')
 def connect_user_to_stan(id_stan: int, id_user: int):
-    query = f"UPDATE stan_device SET idconnecteduser = {id_user} WHERE id = {id_stan}"
+    # On vérifie si le user existe
+    user_info = get_user_info(id_user)
+    if 'ERROR' in user_info.keys():
+        return {"ERROR": "USER DOESN'T EXIST"}
+
+    # On vérifie si le stan existe 
+    stan_info = get_stan_data(id_stan)
+    if 'ERROR' in stan_info.keys():
+        return {"ERROR": "STAN DOESN'T EXIST"}
+
+    # On vérifie si le stan possède pas déjà un user
+    if stan_info["idconnecteduser"] is None:
+        return {"ERROR": "STAN ALREADY USED"}
+
+    # On vérifie si le user est pas déjà connecté à un stan
+    query = f"SELECT id FROM stan_device WHERE idconnecteduser = {id_user}"
     db = DatabaseConnection()
+    result_array = db.execute_select(query)
+
+    for x in result_array:
+        return {"ERROR": "USER ALREADY CONNECTED TO ANOTHER STAN"}
+
+    # On connecte le user au stan
+    query = f"UPDATE stan_device SET idconnecteduser = {id_user} WHERE id = {id_stan}"
     db.execute_query(query)
     return {
         'message': 'OK'
