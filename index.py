@@ -39,6 +39,43 @@ def get_user_info(user_id: int):
 
     return return_dict
 
+@app.get("/user")
+def get_all_users():
+    query = f"SELECT id, lastname, firstname, isadmin, passcode, fingerprint_eigenvalue FROM user"
+    db = DatabaseConnection()
+    result_array = db.execute_select(query)
+
+    return_array = []
+
+    for user in result_array:
+        return_array.append({
+            'id': user[0],
+            'lastname': user[1],
+            'firstname': user[2],
+            'isadmin': user[3],
+            'passcode': user[4],
+            'fingerprint_eigenvalue': user[5]
+        })
+    
+    return return_array
+
+@app.get("/stan")
+def get_all_stan():
+    query = f"SELECT id, mode, idconnecteduser, position FROM stan_device"
+    db = DatabaseConnection()
+    result_array = db.execute_select(query)
+
+    return_array = []
+
+    for stan in result_array:
+        return_array.append({
+            'id': stan[0],
+            'mode': stan[1],
+            'idconnecteduser': stan[2],
+            'position': stan[3]
+        })
+    
+    return return_array
 
 @app.post('/user')
 def create_new_user(lastname: str, firstname: str, isadmin: bool, passcode: str, fingerprint_eigenvalue: str):
